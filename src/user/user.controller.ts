@@ -1,16 +1,17 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express';
+import { Controller, Get, UseGuards } from '@nestjs/common';
+import { User } from '@prisma/client';
 
+import { GetUser } from 'src/auth/decorators';
+import { JwtGuard } from 'src/auth/guards';
 import { PrismaService } from 'src/prisma/prisma.service';
 
+@UseGuards(JwtGuard)
 @Controller('users')
 export class UserConstoller {
   constructor(private prisma: PrismaService) {}
 
-  @UseGuards(AuthGuard('jwt'))
   @Get('me')
-  public async userMe(@Req() request: Request) {
-    return request.user;
+  public async userMe(@GetUser() user: User) {
+    return user;
   }
 }
